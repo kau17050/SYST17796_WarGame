@@ -6,7 +6,7 @@ package ca.sheridancollege.project;
 
 /**
  *
- * @author deepr
+ * @author deepr4
  */
 public class WarCard {
     private final int gameRank;
