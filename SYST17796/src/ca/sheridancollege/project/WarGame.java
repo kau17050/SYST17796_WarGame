@@ -11,9 +11,12 @@ package ca.sheridancollege.project;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 public class WarGame {
     private final List<WarPlayer> players = new ArrayList<>();
     private final WarDeck deck = new WarDeck();
+    private static final int MAX_ROUNDS = 100; // Define a maximum number of rounds to avoid infinite loops
 
     public void addPlayer(WarPlayer player) {
         players.add(player);
@@ -22,7 +25,8 @@ public class WarGame {
     public void play() {
         distributeCards();
 
-        while (atLeastOnePlayerHasCards()) {
+        int round = 0;
+        while (atLeastOnePlayerHasCards() && round < MAX_ROUNDS) {
             WarCard card1 = players.get(0).playCard();
             WarCard card2 = players.get(1).playCard();
 
@@ -34,23 +38,25 @@ public class WarGame {
             if (isGameFinished()) {
                 break;
             }
+            
+            round++;
         }
 
         declareWinner();
     }
 
     private void distributeCards() {
-        for (WarPlayer player : players) {
-            for (int i = 0; i < 26; i++) {
-                player.addToHand(deck.drawCard());
-            }
+        deck.shuffle();
+        for (int i = 0; i < 26; i++) {
+            players.get(0).addToHand(deck.drawCard());
+            players.get(1).addToHand(deck.drawCard());
         }
     }
 
     private void compareCards(WarCard card1, WarCard card2) {
-        int result = Integer.compare(card1.getRank(), card2.getRank());
-        System.out.println("Rank of card 1: " + card1.getRank());
-        System.out.println("Rank of card 2: " + card2.getRank());
+        int result = Integer.compare(card1.getGameRank(), card2.getGameRank());
+        System.out.println("Rank of card 1: " + card1.getGameRank());
+        System.out.println("Rank of card 2: " + card2.getGameRank());
         if (result > 0) {
             players.get(0).addToHand(card1);
             players.get(0).addToHand(card2);
@@ -69,8 +75,24 @@ public class WarGame {
     }
 
     private void declareWinner() {
-        WarPlayer winner = players.stream().filter(WarPlayer::hasCards).findFirst().orElse(null);
-        System.out.println("The winner is: " + (winner != null ? winner.getName() : "None"));
+        WarPlayer player1 = players.get(0);
+        WarPlayer player2 = players.get(1);
+        
+        if (!player1.hasCards()) {
+            System.out.println("The winner is: " + player2.getName());
+        } else if (!player2.hasCards()) {
+            System.out.println("The winner is: " + player1.getName());
+        } else {
+            int player1CardCount = player1.getHandSize();
+            int player2CardCount = player2.getHandSize();
+            if (player1CardCount > player2CardCount) {
+                System.out.println("The winner is: " + player1.getName());
+            } else if (player2CardCount > player1CardCount) {
+                System.out.println("The winner is: " + player2.getName());
+            } else {
+                System.out.println("It's a tie!");
+            }
+        }
     }
 
     private boolean isGameFinished() {

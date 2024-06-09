@@ -21,10 +21,10 @@ public class WarDeck {
     }
 
     private void initializeDeck() {
-        String[] suits = {"Hearts", "Diamonds", "Clubs", "Spades"};
-        for (String suit : suits) {
-            for (int rank = 2; rank <= 14; rank++) {
-                cards.add(new WarCard(rank, suit));
+        String[] gameSuits = {"Hearts", "Diamonds", "Clubs", "Spades"};
+        for (String gameSuit : gameSuits) {
+            for (int gameRank = 2; gameRank <= 14; gameRank++) {
+                cards.add(new WarCard(gameRank, gameSuit));
             }
         }
     }

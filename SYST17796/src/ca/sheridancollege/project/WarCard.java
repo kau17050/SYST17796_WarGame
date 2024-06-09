@@ -9,20 +9,24 @@ package ca.sheridancollege.project;
  * @author deepr
  */
 public class WarCard {
-    private final int rank;
-    private final String suit;
+    private final int gameRank;
+    private final String gameSuit;
 
-    public WarCard(int rank, String suit) {
-        this.rank = rank;
-        this.suit = suit;
+    public WarCard(int gameRank, String gameSuit) {
+        this.gameRank = gameRank;
+        this.gameSuit = gameSuit;
     }
 
     @Override
     public String toString() {
-        return rank + " of " + suit;
+        return gameRank + " of " + gameSuit;
     }
 
-    public int getRank() {
-        return rank;
+    public int getGameRank() {
+        return gameRank;
+    }
+
+    public String getGameSuit() {
+        return gameSuit;
     }
 }
