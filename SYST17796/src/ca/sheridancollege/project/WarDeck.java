@@ -16,11 +16,11 @@ public class WarDeck {
     private final List<WarCard> cards = new ArrayList<>();
 
     public WarDeck() {
-        initializeDeck();
+        startDeck();
         shuffle();
     }
 
-    private void initializeDeck() {
+    private void startDeck() {
         String[] gameSuits = {"Hearts", "Diamonds", "Clubs", "Spades"};
         for (String gameSuit : gameSuits) {
             for (int gameRank = 2; gameRank <= 14; gameRank++) {
@@ -28,7 +28,7 @@ public class WarDeck {
             }
         }
     }
-
+    
     public void shuffle() {
         Collections.shuffle(cards);
     }

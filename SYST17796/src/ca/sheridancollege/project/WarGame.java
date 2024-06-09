@@ -75,20 +75,20 @@ public class WarGame {
     }
 
     private void declareWinner() {
-        WarPlayer player1 = players.get(0);
-        WarPlayer player2 = players.get(1);
+        WarPlayer gamer1 = players.get(0);
+        WarPlayer gamer2 = players.get(1);
         
-        if (!player1.hasCards()) {
-            System.out.println("The winner is: " + player2.getName());
-        } else if (!player2.hasCards()) {
-            System.out.println("The winner is: " + player1.getName());
+        if (!gamer1.hasCards()) {
+            System.out.println("The winner is: " + gamer2.getName());
+        } else if (!gamer2.hasCards()) {
+            System.out.println("The winner is: " + gamer1.getName());
         } else {
-            int player1CardCount = player1.getHandSize();
-            int player2CardCount = player2.getHandSize();
-            if (player1CardCount > player2CardCount) {
-                System.out.println("The winner is: " + player1.getName());
-            } else if (player2CardCount > player1CardCount) {
-                System.out.println("The winner is: " + player2.getName());
+            int player1Card = gamer1.getHandSize();
+            int player2Card = gamer2.getHandSize();
+            if (player1Card > player2Card) {
+                System.out.println("The winner is: " + gamer1.getName());
+            } else if (player2Card > player1Card) {
+                System.out.println("The winner is: " + gamer2.getName());
             } else {
                 System.out.println("It's a tie!");
             }
@@ -101,8 +101,8 @@ public class WarGame {
 
     public static void main(String[] args) {
         WarGame warGame = new WarGame();
-        warGame.addPlayer(new WarPlayer("Player 1"));
-        warGame.addPlayer(new WarPlayer("Player 2"));
+        warGame.addPlayer(new WarPlayer("Player 1:"));
+        warGame.addPlayer(new WarPlayer("Player 2:"));
         warGame.play();
     }
 }
