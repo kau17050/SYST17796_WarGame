@@ -23,7 +23,8 @@ public abstract class Game {
         this.name = name;
         players = new ArrayList();
     }
-
+    
+    
     /**
      * @return the name
      */

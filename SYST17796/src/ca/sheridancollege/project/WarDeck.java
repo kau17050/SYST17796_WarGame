@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class WarDeck {
+public final class WarDeck {
     private final List<WarCard> cards = new ArrayList<>();
 
     public WarDeck() {
