@@ -6,40 +6,46 @@ package ca.sheridancollege.project;
 
 /**
  *
- * @author deepr
+ * @author imgur
  */
-import java.util.ArrayList;
-import java.util.List;
 
-public class WarPlayer {
-    private final String name;
-    private final List<WarCard> hand = new ArrayList<>();
+import java.util.ArrayList;
+
+public class WarPlayer extends Player {
+    private ArrayList<PlayingCard> hand;
 
     public WarPlayer(String name) {
-        this.name = name;
+        super(name);
+        this.hand = new ArrayList<>();
     }
 
-    public String getName() {
-        return name;
+    public ArrayList<PlayingCard> getHand() {
+        return hand;
     }
 
-    public void addToHand(WarCard card) {
+    public void addCardToHand(PlayingCard card) {
         hand.add(card);
     }
 
-    public WarCard playCard() {
+    public PlayingCard playCard() {
         if (!hand.isEmpty()) {
             return hand.remove(0);
-        } else {
-            throw new IllegalStateException("Player's hand is empty");
         }
+        return null;
     }
 
-    public boolean hasCards() {
-        return !hand.isEmpty();
+    public ArrayList<PlayingCard> playCards(int number) {
+        ArrayList<PlayingCard> cards = new ArrayList<>();
+        for (int i = 0; i < number; i++) {
+            if (!hand.isEmpty()) {
+                cards.add(hand.remove(0));
+            }
+        }
+        return cards;
     }
 
-    public int getHandSize() {
-        return hand.size();
+    @Override
+    public void play() {
+        // Implementation depends on the game flow, handled in WarGame class
     }
 }

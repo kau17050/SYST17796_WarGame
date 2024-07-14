@@ -4,106 +4,130 @@
  */
 package ca.sheridancollege.project;
 
-/**
- *
- * @author deepr
- * @Arsh
- */
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
+public class WarGame extends Game {
+    private GroupOfCards deck;
+    private static final int MAX_ROUNDS = 100;
+    private ArrayList<Player> players;
 
-
-public class WarGame {
-    private final List<WarPlayer> players = new ArrayList<>();
-    private final WarDeck deck = new WarDeck();
-    private static final int MAX_ROUNDS = 100; // Define a maximum number of rounds to avoid infinite loops
-
-    public void addPlayer(WarPlayer player) {
-        players.add(player);
+    public WarGame(String name, ArrayList<Player> players) {
+        super(name);
+        this.players = players;
+        deck = new GroupOfCards(52);
     }
 
+    @Override
     public void play() {
-        distributeCards();
-
-        int round = 0;
-        while (atLeastOnePlayerHasCards() && round < MAX_ROUNDS) {
-            WarCard card1 = players.get(0).playCard();
-            WarCard card2 = players.get(1).playCard();
-
-            System.out.println(players.get(0).getName() + " plays: " + card1);
-            System.out.println(players.get(1).getName() + " plays: " + card2);
-
-            compareCards(card1, card2);
-            
-            if (isGameFinished()) {
-                break;
-            }
-            
-            round++;
+        if (players.size() != 2) {
+            throw new IllegalArgumentException("War requires exactly two players.");
         }
 
+        WarPlayer player1 = (WarPlayer) players.get(0);
+        WarPlayer player2 = (WarPlayer) players.get(1);
+
+        // Distribute cards to players
+        distributeCards(player1, player2);
+
+        int round = 0;
+        while (!player1.getHand().isEmpty() && !player2.getHand().isEmpty() && round < MAX_ROUNDS) {
+            round++;
+            System.out.println("\nRound " + round + ":");
+
+            ArrayList<PlayingCard> warPile = new ArrayList<>();
+
+            PlayingCard card1 = player1.playCard();
+            PlayingCard card2 = player2.playCard();
+
+            warPile.add(card1);
+            warPile.add(card2);
+
+            System.out.println(player1.getName() + " plays: " + card1);
+            System.out.println(player2.getName() + " plays: " + card2);
+
+            while (card1.getRank().equals(card2.getRank())) {
+                System.out.println("War!");
+
+                // Ensure both players have enough cards for a war
+                if (player1.getHand().size() < 4) {
+                    player2.getHand().addAll(warPile);
+                    player2.getHand().addAll(player1.getHand());
+                    player1.getHand().clear();
+                    System.out.println(player1.getName() + " does not have enough cards for war.");
+                    return;
+                } else if (player2.getHand().size() < 4) {
+                    player1.getHand().addAll(warPile);
+                    player1.getHand().addAll(player2.getHand());
+                    player2.getHand().clear();
+                    System.out.println(player2.getName() + " does not have enough cards for war.");
+                    return;
+                }
+
+                // Set aside 3 cards as a side for each player
+                ArrayList<PlayingCard> player1WarCards = player1.playCards(3);
+                ArrayList<PlayingCard> player2WarCards = player2.playCards(3);
+
+                warPile.addAll(player1WarCards);
+                warPile.addAll(player2WarCards);
+
+                System.out.println(player1.getName() + " sets aside 3 cards as a side.");
+                System.out.println(player2.getName() + " sets aside 3 cards as a side.");
+
+                // Flip over the fourth card
+                card1 = player1.playCard();
+                card2 = player2.playCard();
+
+                warPile.add(card1);
+                warPile.add(card2);
+
+                System.out.println(player1.getName() + " flips over: " + card1);
+                System.out.println(player2.getName() + " flips over: " + card2);
+            }
+
+            // Determine the outcome of the round based on the played cards
+            if (card1.getRank().ordinal() > card2.getRank().ordinal()) {
+                // Player 1 wins the round
+                player1.getHand().addAll(warPile);
+                System.out.println(player1.getName() + " wins this round with a total of " + player1.getHand().size() + " cards.");
+                System.out.println(player2.getName() + " loses this round with a total of " + player2.getHand().size() + " cards.");
+            } else {
+                // Player 2 wins the round
+                player2.getHand().addAll(warPile);
+                System.out.println(player1.getName() + " loses this round with a total of " + player1.getHand().size() + " cards.");
+                System.out.println(player2.getName() + " wins this round with a total of " + player2.getHand().size() + " cards.");
+            }
+        }
         declareWinner();
     }
 
-    private void distributeCards() {
-        deck.shuffle();
-        for (int i = 0; i < 26; i++) {
-            players.get(0).addToHand(deck.drawCard());
-            players.get(1).addToHand(deck.drawCard());
+    private void distributeCards(WarPlayer player1, WarPlayer player2) {
+        ArrayList<PlayingCard> cards = deck.getCards();
+        Collections.shuffle(cards); // Shuffle the deck before distributing
+        for (int i = 0; i < cards.size(); i++) {
+            if (i % 2 == 0) {
+                player1.addCardToHand(cards.get(i));
+            } else {
+                player2.addCardToHand(cards.get(i));
+            }
         }
     }
 
-    private void compareCards(WarCard card1, WarCard card2) {
-        int result = Integer.compare(card1.getGameRank(), card2.getGameRank());
-        System.out.println("Rank of card 1: " + card1.getGameRank());
-        System.out.println("Rank of card 2: " + card2.getGameRank());
-        if (result > 0) {
-            players.get(0).addToHand(card1);
-            players.get(0).addToHand(card2);
-            System.out.println(players.get(0).getName() + " wins the round!");
-        } else if (result < 0) {
-            players.get(1).addToHand(card1);
-            players.get(1).addToHand(card2);
-            System.out.println(players.get(1).getName() + " wins the round!");
+    @Override
+    public void declareWinner() {
+        WarPlayer player1 = (WarPlayer) players.get(0);
+        WarPlayer player2 = (WarPlayer) players.get(1);
+
+        if (player1.getHand().size() > player2.getHand().size()) {
+            System.out.println("Winner is: " + player1.getName());
+        } else if (player2.getHand().size() > player1.getHand().size()) {
+            System.out.println("Winner is: " + player2.getName());
         } else {
             System.out.println("It's a tie!");
         }
     }
 
-    private boolean atLeastOnePlayerHasCards() {
-        return players.stream().anyMatch(WarPlayer::hasCards);
-    }
-
-    private void declareWinner() {
-        WarPlayer gamer1 = players.get(0);
-        WarPlayer gamer2 = players.get(1);
-        
-        if (!gamer1.hasCards()) {
-            System.out.println("The winner is: " + gamer2.getName());
-        } else if (!gamer2.hasCards()) {
-            System.out.println("The winner is: " + gamer1.getName());
-        } else {
-            int player1Card = gamer1.getHandSize();
-            int player2Card = gamer2.getHandSize();
-            if (player1Card > player2Card) {
-                System.out.println("The winner is: " + gamer1.getName());
-            } else if (player2Card > player1Card) {
-                System.out.println("The winner is: " + gamer2.getName());
-            } else {
-                System.out.println("It's a tie!");
-            }
-        }
-    }
-
-    private boolean isGameFinished() {
-        return players.stream().anyMatch(player -> !player.hasCards());
-    }
-
-    public static void main(String[] args) {
-        WarGame warGame = new WarGame();
-        warGame.addPlayer(new WarPlayer("Player 1:"));
-        warGame.addPlayer(new WarPlayer("Player 2:"));
-        warGame.play();
+    public ArrayList<Player> getPlayers() {
+        return players;
     }
 }
