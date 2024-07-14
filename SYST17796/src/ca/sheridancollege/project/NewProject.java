@@ -15,7 +15,7 @@ public class NewProject {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        
         WarPlayer player1 = new WarPlayer("Player 1");
         WarPlayer player2 = new WarPlayer("Player 2");
 
